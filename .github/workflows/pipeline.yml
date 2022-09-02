@@ -79,7 +79,7 @@ jobs:
         push: true
         tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
- deploy_heroku:
+  deploy_heroku:
     runs-on: ubuntu-18.04
     needs: build-docker
     steps:
