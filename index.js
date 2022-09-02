@@ -1,7 +1,5 @@
 var express = require('express');
 
-const PORT = 8888;
-
 var app = express();
 
 app.get('/', function (req, res) {
@@ -14,5 +12,5 @@ app.get('/:name', function (req, res) {
   res.send('Hola ' + req.params.name);
 });
 
-app.listen(PORT);
-console.log('Running on http://localhost:' + PORT);
+app.listen(process.env.PORT || 3000);
+console.log('Running on http://localhost:' + process.env.PORT);
