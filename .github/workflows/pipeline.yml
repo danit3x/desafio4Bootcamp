@@ -4,7 +4,6 @@ on:
   push:
     branches: [ "main" ]
 
-
 env:
   REGISTRY: danit3x
   IMAGE_NAME: bootcamp_cicd
@@ -90,3 +89,16 @@ jobs:
           heroku_app_name: "desafio4danitex" #Must be unique in Heroku
           heroku_email: "dvargas087@gmail.com"
           usedocker: true  
+
+  dast_scan:
+    runs-on: ubuntu-18.04
+    needs: deploy_heroku
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: master
+      - name: ZAP Scan
+        uses: zaproxy/action-baseline@v0.7.0
+        with:
+          target: 'https://desafio4danitex.herokuapp.com/'   
