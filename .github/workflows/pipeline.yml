@@ -12,12 +12,10 @@ env:
 jobs:
   init:
     runs-on: ubuntu-18.04
-
     strategy:
       matrix:
         node-version: [16.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
     - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
@@ -26,6 +24,40 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm install
+  
+  SECRET:
+    runs-on: ubuntu-18.04
+    needs: init
+    name: Secret-Scanner
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Secret Detection
+        uses: zricethezav/gitleaks-action@master
+        continue-on-error: true 
+
+  trivy-security:
+    runs-on: ubuntu-18.04
+    needs: init
+    continue-on-error: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Build an image from Dockerfile
+        run: |
+          docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'  
   
   build-docker:
     runs-on: ubuntu-18.04
@@ -46,3 +78,15 @@ jobs:
       with:
         push: true
         tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+ deploy_heroku:
+    runs-on: ubuntu-18.04
+    needs: build-docker
+    steps:
+      - uses: actions/checkout@v3
+      - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "desafio4danitex" #Must be unique in Heroku
+          heroku_email: "dvargas087@gmail.com"
+          usedocker: true  
