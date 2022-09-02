@@ -4,5 +4,4 @@ WORKDIR /usr/src/app
 COPY package.json /usr/src/app/
 RUN npm install -g npm@8.19.1
 COPY . /usr/src/app
-EXPOSE 8888
 CMD [ "npm", "start" ]
