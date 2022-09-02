@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: danit3x
-  IMAGE_NAME: bootcampCICD
+  IMAGE_NAME: bootcamp_cicd
   
 jobs:
   init:
@@ -39,7 +39,7 @@ jobs:
 
   trivy-security:
     runs-on: ubuntu-18.04
-    needs: init
+    needs: SECRET
     continue-on-error: true
     steps:
       - name: Checkout code
@@ -61,7 +61,7 @@ jobs:
   
   build-docker:
     runs-on: ubuntu-18.04
-    needs: init
+    needs: trivy-security
     steps:
     - uses: actions/checkout@v3
     - name: Set up QEMU
