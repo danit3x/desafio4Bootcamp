@@ -4,7 +4,7 @@ var app = express();
 
 app.get('/', function (req, res) {
   console.log(req);
-  res.send('Bienvenido 2');
+  res.send('Bienvenido');
 });
 
 app.get('/:name', function (req, res) {
