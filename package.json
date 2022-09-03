@@ -9,7 +9,7 @@
     "test": "mocha index.test.js"
   },
   "dependencies": {
-    "express": "*",
+    "express": "^4.17.3",
     "mocha":"10.0.0"
   }
 }
